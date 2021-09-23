@@ -1,32 +1,18 @@
 {
   "expo": {
-    "name": "AwesomeProject",
-    "slug": "AwesomeProject",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+   "name": "TODO",
+   "icon": "./assets/icon1.png",
+   "version": "1.0.0",
+   "orientation": "portrait",
+   "slug": "AwesomeProject",
+   "sdkVersion":"42.0.0",
+   "ios": {
+     "bundleIdentifier": "com.yourcompany.yourappname",
+     "buildNumber": "1.0.0"
+   },
+   "android": {
+     "package": "com.libin.Todo",
+     "versionCode": 1
+   }
   }
 }
