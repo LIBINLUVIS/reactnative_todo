@@ -1,21 +1,82 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
 import Task from './components/Task';
-
+import axios from "axios";
 export default function App() {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
+  const [count,setCount]=useState(0);
 
+
+   useEffect(()=>{
+    const config = {
+      headers: {
+        "Accept":"application/json",
+        "Content-Type": "application/json",
+      },
+    };
+     const get="https://reactnativeapis.herokuapp.com/api/task-list/";
+    axios.get(get,config).then((res)=>{
+      
+       setTaskItems(res.data)
+     })
+
+
+   },[task])
+   
   const handleAddTask = () => {
-    Keyboard.dismiss();
-    setTaskItems([...taskItems, task])
-    setTask(null);
+    const config = {
+      headers: {
+        "Accept":"application/json",
+        "Content-Type": "application/json",
+      },
+    };
+    const body = JSON.stringify({ title : task });
+
+    const api="https://reactnativeapis.herokuapp.com/api/task-create/";
+    axios.post(api,body,config).then((res)=>{
+      Keyboard.dismiss();
+      setTask(null);
+    
+    }).catch((err)=>{
+      console.log(err,"error");
+    })
   }
 
+
   const completeTask = (index) => {
-    let itemsCopy = [...taskItems];
-    itemsCopy.splice(index, 1);
-    setTaskItems(itemsCopy)
+    setCount(count+1); 
+                  
+    if(count>=3){
+      const config = {
+        headers: {
+          "Accept":"application/json",
+          "Content-Type": "application/json",
+        },
+      };
+      const api=`https://reactnativeapis.herokuapp.com/api/task-delete/${index}/`;
+      axios.post(api,config).then((res)=>{
+        setCount(0);
+        if(res.status==200){
+          const config = {
+            headers: {
+              "Accept":"application/json",
+              "Content-Type": "application/json",
+            },
+          };
+           const get="https://reactnativeapis.herokuapp.com/api/task-list/";
+          axios.get(get,config).then((res)=>{
+            
+             setTaskItems(res.data)
+           })
+        }
+      
+      }).catch((err)=>{
+        console.log(err,"error");
+        setCount(0)
+      })
+    }
+
   }
 
   return (
@@ -30,19 +91,20 @@ export default function App() {
 
       {/* Today's Tasks */}
       <View style={styles.tasksWrapper}>
-        <Text style={styles.sectionTitle}>Today's tasks</Text>
-        <View style={styles.items}>
-          {/* This is where the tasks will go! */}
+        <Text style={styles.sectionTitle}>Passwords</Text>
+
+        {taskItems ? <View style={styles.items}>
           {
             taskItems.map((item, index) => {
               return (
-                <TouchableOpacity key={index}  onPress={() => completeTask(index)}>
-                  <Task text={item} /> 
+                <TouchableOpacity key={index}  onPress={() => completeTask(item.id)}>
+                  <Task text={item.title} /> 
                 </TouchableOpacity>
               )
             })
           }
         </View>
+        :null}
       </View>
         
       </ScrollView>
@@ -53,7 +115,7 @@ export default function App() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.writeTaskWrapper}
       >
-        <TextInput style={styles.input} placeholder={'Write a task...'} value={task} onChangeText={text => setTask(text)} />
+        <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={text => setTask(text)} />
         <TouchableOpacity onPress={() => handleAddTask()}>
           <View style={styles.addWrapper}>
             <Text style={styles.addText}>+</Text>
