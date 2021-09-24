@@ -6,6 +6,11 @@
    "orientation": "portrait",
    "slug": "AwesomeProject",
    "sdkVersion":"42.0.0",
+   "splash":{
+    "image":"",
+    "resizeMode":"contain",
+    "backgroundColor":"#808080"
+   },
    "ios": {
      "bundleIdentifier": "com.yourcompany.yourappname",
      "buildNumber": "1.0.0"
