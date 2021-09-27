@@ -1,11 +1,14 @@
 import React, {useState,useEffect} from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, View, Alert,TextInput, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
 import Task from './components/Task';
+import Spinner from 'react-native-loading-spinner-overlay';
+import Icon from 'react-native-vector-icons/FontAwesome'
 import axios from "axios";
 export default function App() {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
   const [count,setCount]=useState(0);
+  const [spiner,setSpiner]= useState(true);
 
 
    useEffect(()=>{
@@ -19,10 +22,33 @@ export default function App() {
     axios.get(get,config).then((res)=>{
       
        setTaskItems(res.data)
+       setSpiner(false)
+       
+     }).catch((err)=>{
+       Alert.alert("Please Check Your Connection")
      })
 
 
+   },[])
+
+  useEffect(()=>{
+     taskupdate();
    },[task])
+
+  const taskupdate=()=>{
+    const config = {
+      headers: {
+        "Accept":"application/json",
+        "Content-Type": "application/json",
+      },
+    };
+     const get="https://reactnativeapis.herokuapp.com/api/task-list/";
+    axios.get(get,config).then((res)=>{
+      
+       setTaskItems(res.data)
+     })
+
+   }
    
   const handleAddTask = () => {
     const config = {
@@ -68,6 +94,7 @@ export default function App() {
           axios.get(get,config).then((res)=>{
             
              setTaskItems(res.data)
+             Alert.alert("Password Deleted");
            })
         }
       
@@ -91,6 +118,11 @@ export default function App() {
 
       {/* Today's Tasks */}
       <View style={styles.tasksWrapper}>
+      <Spinner
+        visible={spiner}
+        textContent={'Loading...'}
+        textStyle={styles.spinnerTextStyle}
+      />
         <Text style={styles.sectionTitle}>Passwords</Text>
 
         {taskItems ? <View style={styles.items}>
@@ -104,7 +136,8 @@ export default function App() {
             })
           }
         </View>
-        :null}
+        : 
+       null}
       </View>
         
       </ScrollView>
@@ -115,10 +148,10 @@ export default function App() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.writeTaskWrapper}
       >
-        <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={text => setTask(text)} />
+        <TextInput style={styles.input} placeholder={'Write your password'} value={task} onChangeText={text => setTask(text)} />
         <TouchableOpacity onPress={() => handleAddTask()}>
           <View style={styles.addWrapper}>
-            <Text style={styles.addText}>+</Text>
+            <Text style={styles.addText}><Icon name="plus" size={30} color="#55BCF6" /></Text>
           </View>
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -131,6 +164,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E8EAED',
+  },
+  spinnerTextStyle: {
+    color: '#bfbfff'
   },
   tasksWrapper: {
     paddingTop: 80,
